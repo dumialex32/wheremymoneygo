@@ -1,16 +1,14 @@
-//src\routes\index.tsx
-import { Button } from "@/components/ui/button";
+// src\routes\index.tsx
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
-  component: RouteComponent,
+  component: Home,
 });
 
-function RouteComponent() {
+function Home() {
   return (
-    <div className="text-red-500">
-      <Button className="font-bold">Click</Button>
-      <Button className="font-normal">Click</Button>
+    <div>
+      <div className="flex items-center gap-4"></div>
     </div>
   );
 }
