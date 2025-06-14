@@ -9,38 +9,99 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthedDashboardIndexRouteImport } from './routes/_authed/dashboard/index'
+import { Route as AuthedDashboardTransactionsIndexRouteImport } from './routes/_authed/dashboard/transactions/index'
+import { Route as AuthedDashboardTransactionsNewIndexRouteImport } from './routes/_authed/dashboard/transactions/new/index'
 
+const AuthedRoute = AuthedRouteImport.update({
+  id: '/_authed',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthedDashboardIndexRoute = AuthedDashboardIndexRouteImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedDashboardTransactionsIndexRoute =
+  AuthedDashboardTransactionsIndexRouteImport.update({
+    id: '/dashboard/transactions/',
+    path: '/dashboard/transactions/',
+    getParentRoute: () => AuthedRoute,
+  } as any)
+const AuthedDashboardTransactionsNewIndexRoute =
+  AuthedDashboardTransactionsNewIndexRouteImport.update({
+    id: '/dashboard/transactions/new/',
+    path: '/dashboard/transactions/new/',
+    getParentRoute: () => AuthedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '': typeof AuthedRouteWithChildren
+  '/dashboard': typeof AuthedDashboardIndexRoute
+  '/dashboard/transactions': typeof AuthedDashboardTransactionsIndexRoute
+  '/dashboard/transactions/new': typeof AuthedDashboardTransactionsNewIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '': typeof AuthedRouteWithChildren
+  '/dashboard': typeof AuthedDashboardIndexRoute
+  '/dashboard/transactions': typeof AuthedDashboardTransactionsIndexRoute
+  '/dashboard/transactions/new': typeof AuthedDashboardTransactionsNewIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authed': typeof AuthedRouteWithChildren
+  '/_authed/dashboard/': typeof AuthedDashboardIndexRoute
+  '/_authed/dashboard/transactions/': typeof AuthedDashboardTransactionsIndexRoute
+  '/_authed/dashboard/transactions/new/': typeof AuthedDashboardTransactionsNewIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | ''
+    | '/dashboard'
+    | '/dashboard/transactions'
+    | '/dashboard/transactions/new'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | ''
+    | '/dashboard'
+    | '/dashboard/transactions'
+    | '/dashboard/transactions/new'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authed'
+    | '/_authed/dashboard/'
+    | '/_authed/dashboard/transactions/'
+    | '/_authed/dashboard/transactions/new/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthedRoute: typeof AuthedRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/_authed': {
+      id: '/_authed'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +109,49 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authed/dashboard/': {
+      id: '/_authed/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthedDashboardIndexRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/dashboard/transactions/': {
+      id: '/_authed/dashboard/transactions/'
+      path: '/dashboard/transactions'
+      fullPath: '/dashboard/transactions'
+      preLoaderRoute: typeof AuthedDashboardTransactionsIndexRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/dashboard/transactions/new/': {
+      id: '/_authed/dashboard/transactions/new/'
+      path: '/dashboard/transactions/new'
+      fullPath: '/dashboard/transactions/new'
+      preLoaderRoute: typeof AuthedDashboardTransactionsNewIndexRouteImport
+      parentRoute: typeof AuthedRoute
+    }
   }
 }
 
+interface AuthedRouteChildren {
+  AuthedDashboardIndexRoute: typeof AuthedDashboardIndexRoute
+  AuthedDashboardTransactionsIndexRoute: typeof AuthedDashboardTransactionsIndexRoute
+  AuthedDashboardTransactionsNewIndexRoute: typeof AuthedDashboardTransactionsNewIndexRoute
+}
+
+const AuthedRouteChildren: AuthedRouteChildren = {
+  AuthedDashboardIndexRoute: AuthedDashboardIndexRoute,
+  AuthedDashboardTransactionsIndexRoute: AuthedDashboardTransactionsIndexRoute,
+  AuthedDashboardTransactionsNewIndexRoute:
+    AuthedDashboardTransactionsNewIndexRoute,
+}
+
+const AuthedRouteWithChildren =
+  AuthedRoute._addFileChildren(AuthedRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthedRoute: AuthedRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
